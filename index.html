@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cuaderno de Estudio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#2563EB;--accent2:#7C3AED;--accent-light:#EFF6FF;--accent2-light:#F5F3FF;
+  --bg:#F8F7F4;--surface:#FFFFFF;--surface2:#F1EFE8;--surface3:#E8E6E0;
+  --border:#E2DFD8;--border2:#D1CEC6;
+  --text:#1A1917;--muted:#6B6860;--muted2:#9B9890;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.06);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── HOME ── */
+#home{background:var(--bg)}
+.home-header{padding:2rem 2.5rem 1.5rem;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border)}
+.home-header h1{font-family:'Lora',serif;font-size:28px;font-weight:600;color:var(--text)}
+.home-header p{font-size:13px;color:var(--muted);margin-top:3px}
+.home-body{padding:2rem 2.5rem;flex:1}
+.section-heading{font-size:11px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.subject-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.subject-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.subject-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent,#2563EB);border-radius:14px 14px 0 0}
+.subject-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:.75rem;background:var(--surface2)}
+.subject-name{font-weight:500;font-size:15px;color:var(--text);margin-bottom:3px}
+.subject-meta{font-size:11px;color:var(--muted);display:flex;gap:8px}
+.subject-meta span{display:flex;align-items:center;gap:3px}
+.subject-actions{position:absolute;top:10px;right:10px;display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.subject-card:hover .subject-actions{opacity:1}
+.icon-btn{width:26px;height:26px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--surface2);color:var(--muted)}
+.icon-btn:hover{background:var(--border2);color:var(--text)}
+.add-subject-card{background:transparent;border:1.5px dashed var(--border2);border-radius:14px;padding:1.25rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;min-height:110px}
+.add-subject-card:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+
+/* ── NOTEBOOK ── */
+#notebook{flex-direction:row}
+#nb-sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:sticky;top:0}
+#nb-sidebar-top{padding:1rem;border-bottom:1px solid var(--border)}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;padding:4px 0;border:none;background:none;font-family:'DM Sans',sans-serif}
+.back-btn:hover{color:var(--text)}
+.nb-subject-name{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-top:.5rem;color:var(--text);padding:2px 0}
+.nb-subject-name:focus{outline:none;border-bottom:1.5px solid var(--accent)}
+.sidebar-section{font-size:10px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;padding:.75rem 1rem .3rem}
+.topic-item{display:flex;align-items:center;gap:7px;padding:6px 10px;margin:1px 6px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s}
+.topic-item:hover{background:var(--surface2);color:var(--text)}
+.topic-item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+.topic-item svg{width:13px;height:13px;flex-shrink:0}
+.topic-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topic-item-del{opacity:0;width:16px;height:16px;flex-shrink:0;border:none;background:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:3px}
+.topic-item:hover .topic-item-del{opacity:.6}
+.topic-item-del:hover{opacity:1!important;color:#DC2626}
+#add-topic-btn{margin:8px;padding:7px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+#add-topic-btn:hover{background:#1D4ED8}
+
+/* ── EDITOR ── */
+#nb-main{flex:1;display:flex;flex-direction:column;height:100vh;min-width:0}
+#nb-topbar{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap}
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-left:auto}
+.view-tab{padding:4px 10px;font-size:12px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+.view-tab.active{background:var(--accent);color:#fff}
+.tb-btn{padding:5px 9px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all .15s}
+.tb-btn:hover{background:var(--surface2)}
+.tb-btn.on{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.tb-sep{width:1px;height:20px;background:var(--border);margin:0 2px;flex-shrink:0}
+.color-dot{width:17px;height:17px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;flex-shrink:0;transition:border-color .1s}
+.color-dot.sel{border-color:var(--text)}
+#topic-title-inp{font-family:'Lora',serif;font-size:14px;font-weight:600;padding:3px 6px;border:none;background:transparent;color:var(--text);outline:none;max-width:180px;flex-shrink:1}
+#topic-title-inp:focus{background:var(--surface2);border-radius:4px}
+
+/* canvas area */
+#canvas-area{flex:1;position:relative;overflow:auto;background:var(--bg)}
+canvas#schema-canvas{position:absolute;top:0;left:0;cursor:crosshair;touch-action:none}
+
+/* cards view */
+#cards-area{flex:1;display:none;flex-direction:column;overflow:hidden}
+#cards-topbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+#cards-topbar h2{font-size:14px;font-weight:500}
+.ai-btn{padding:6px 14px;background:var(--accent2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;transition:opacity .15s}
+.ai-btn:hover{opacity:.88}
+.ai-btn:disabled{opacity:.45;cursor:not-allowed}
+#cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:14px;overflow-y:auto;flex:1}
+.flash-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;min-height:90px;display:flex;flex-direction:column}
+.flash-card:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.flash-card .card-q{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.flash-card .card-a{font-size:11px;color:var(--muted);margin-top:6px;display:none;border-top:1px solid var(--border);padding-top:6px}
+.flash-card.flipped{border-color:var(--accent);background:var(--accent-light)}
+.flash-card.flipped .card-q{color:var(--accent)}
+.flash-card.flipped .card-a{display:block;color:var(--accent2)}
+.flash-card .card-hint{font-size:10px;color:var(--muted2);margin-top:4px}
+.flash-card.flipped .card-hint{display:none}
+#ai-status{font-size:11px;color:var(--muted);padding:4px 14px}
+.cards-empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)}
+.cards-empty p{margin-bottom:6px}
+.cards-empty small{font-size:11px;color:var(--muted2)}
+
+/* export bar */
+#export-bar{padding:7px 12px;border-top:1px solid var(--border);display:flex;gap:6px;align-items:center;background:var(--surface);flex-wrap:wrap}
+.exp-label{font-size:11px;color:var(--muted2);margin-right:2px}
+.exp-btn{padding:4px 9px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;transition:all .15s}
+.exp-btn:hover{background:var(--surface2);border-color:var(--border2)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border-radius:14px;padding:1.5rem;width:100%;max-width:380px;box-shadow:var(--shadow-md)}
+.modal-box h3{font-family:'Lora',serif;font-size:18px;font-weight:600;margin-bottom:.25rem}
+.modal-box p{font-size:12px;color:var(--muted);margin-bottom:1rem}
+.modal-field{margin-bottom:.75rem}
+.modal-field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.modal-field input,.modal-field select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--accent)}
+.emoji-picker{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.emoji-opt{width:32px;height:32px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.emoji-opt:hover,.emoji-opt.sel{border-color:var(--accent);background:var(--accent-light)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
+.m-btn{padding:7px 14px;border-radius:7px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all .15s}
+.m-btn:hover{background:var(--surface2)}
+.m-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.m-btn.primary:hover{background:#1D4ED8}
+.m-btn.danger{background:#FEF2F2;color:#DC2626;border-color:#FECACA}
+.m-btn.danger:hover{background:#FEE2E2}
+
+/* colors for subjects */
+.color-opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.color-opt{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:border-color .12s}
+.color-opt.sel{border-color:var(--text)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  #nb-sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--border)}
+  #notebook{flex-direction:column}
+  #nb-main{height:auto}
+  #canvas-area{min-height:70vh}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="home">
+  <div class="home-header">
+    <div>
+      <h1>Mis Cuadernos</h1>
+      <p>Selecciona una materia para empezar a estudiar</p>
+    </div>
+    <button class="tb-btn" onclick="openNewSubjectModal()" style="font-size:13px;padding:7px 14px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva materia
+    </button>
+  </div>
+  <div class="home-body">
+    <div class="section-heading">Materias</div>
+    <div class="subjects-grid" id="subjects-grid"></div>
+  </div>
+</div>
+
+<!-- ══ NOTEBOOK ══ -->
+<div class="screen" id="notebook">
+  <!-- Sidebar -->
+  <div id="nb-sidebar">
+    <div id="nb-sidebar-top">
+      <button class="back-btn" onclick="goHome()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </button>
+      <div contenteditable="true" id="nb-subject-title" class="nb-subject-name" spellcheck="false"></div>
+    </div>
+    <div class="sidebar-section">Temas</div>
+    <div id="topics-list" style="flex:1;overflow-y:auto"></div>
+    <button id="add-topic-btn" onclick="createTopic()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuevo tema
+    </button>
+  </div>
+
+  <!-- Main editor -->
+  <div id="nb-main">
+    <!-- Toolbar -->
+    <div id="nb-topbar">
+      <input id="topic-title-inp" placeholder="Título del tema..." oninput="onTopicTitleChange()"/>
+      <div class="tb-sep"></div>
+      <button class="tb-btn on" id="t-sel" onclick="setTool('select')" title="Seleccionar (V)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-7 1-3 7L5 3z"/></svg>
+      </button>
+      <button class="tb-btn" id="t-box" onclick="setTool('box')" title="Caja (B)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      </button>
+      <button class="tb-btn" id="t-oval" onclick="setTool('oval')" title="Óvalo (O)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="6"/></svg>
+      </button>
+      <button class="tb-btn" id="t-arrow" onclick="setTool('arrow')" title="Flecha (A)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <button class="tb-btn" id="t-text" onclick="setTool('text')" title="Texto (T)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+      <div class="color-dot sel" style="background:#2563EB" data-c="#2563EB" onclick="setColor(this)" title="Azul"></div>
+      <div class="color-dot" style="background:#7C3AED" data-c="#7C3AED" onclick="setColor(this)" title="Morado"></div>
+      <div class="color-dot" style="background:#059669" data-c="#059669" onclick="setColor(this)" title="Verde"></div>
+      <div class="color-dot" style="background:#DC2626" data-c="#DC2626" onclick="setColor(this)" title="Rojo"></div>
+      <div class="color-dot" style="background:#D97706" data-c="#D97706" onclick="setColor(this)" title="Naranja"></div>
+      <div class="color-dot" style="background:#374151" data-c="#374151" onclick="setColor(this)" title="Gris"></div>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" onclick="undoAction()" title="Deshacer (Ctrl+Z)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+      </button>
+      <button class="tb-btn" onclick="deleteSelected()" title="Borrar selección (Del)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+      </button>
+      <div class="view-toggle">
+        <button class="view-tab active" id="vt-schema" onclick="switchView('schema')">Esquema</button>
+        <button class="view-tab" id="vt-cards" onclick="switchView('cards')">Tarjetas</button>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="canvas-area">
+      <canvas id="schema-canvas"></canvas>
+    </div>
+
+    <!-- Cards -->
+    <div id="cards-area">
+      <div id="cards-topbar">
+        <h2>Tarjetas de estudio</h2>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="ai-status"></span>
+          <button class="ai-btn" id="gen-btn" onclick="generateCards()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Generar con IA
+          </button>
+          <button class="tb-btn" onclick="clearCards()">Limpiar</button>
+        </div>
+      </div>
+      <div id="cards-grid"></div>
+    </div>
+
+    <!-- Export bar -->
+    <div id="export-bar">
+      <span class="exp-label">Exportar:</span>
+      <button class="exp-btn" onclick="exportPDF()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF
+      </button>
+      <button class="exp-btn" onclick="exportWord()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Word
+      </button>
+      <button class="exp-btn" onclick="exportImage()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Imagen
+      </button>
+      <button class="exp-btn" onclick="exportAllPDF()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Todos los temas (PDF)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Nueva Materia ══ -->
+<div class="modal-overlay" id="modal-subject">
+  <div class="modal-box">
+    <h3>Nueva Materia</h3>
+    <p>Crea un cuaderno para una asignatura o proyecto</p>
+    <div class="modal-field">
+      <label>Nombre</label>
+      <input id="ms-name" placeholder="Ej: Biología, Historia, Matemáticas..."/>
+    </div>
+    <div class="modal-field">
+      <label>Ícono</label>
+      <div class="emoji-picker" id="emoji-picker"></div>
+    </div>
+    <div class="modal-field">
+      <label>Color</label>
+      <div class="color-opts" id="color-opts"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="m-btn" onclick="closeModal('modal-subject')">Cancelar</button>
+      <button class="m-btn primary" onclick="confirmNewSubject()">Crear materia</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Renombrar Tema ══ -->
+<div class="modal-overlay" id="modal-topic">
+  <div class="modal-box">
+    <h3>Nuevo tema</h3>
+    <p>Agrega un tema o sección dentro de esta materia</p>
+    <div class="modal-field">
+      <label>Nombre del tema</label>
+      <input id="mt-name" placeholder="Ej: Mitosis, La Revolución Francesa..."/>
+    </div>
+    <div class="modal-btns">
+      <button class="m-btn" onclick="closeModal('modal-topic')">Cancelar</button>
+      <button class="m-btn primary" onclick="confirmNewTopic()">Crear tema</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Eliminar ══ -->
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal-box">
+    <h3 id="del-title">¿Eliminar?</h3>
+    <p id="del-msg"></p>
+    <div class="modal-btns">
+      <button class="m-btn" onclick="closeModal('modal-delete')">Cancelar</button>
+      <button class="m-btn danger" id="del-confirm-btn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INLINE TEXT EDITOR ══ -->
+<div id="inline-editor" style="display:none;position:fixed;z-index:50">
+  <input id="inline-input" style="border:2px solid var(--accent);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;background:var(--surface);color:var(--text);outline:none;min-width:120px"/>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+const EMOJIS = ['📚','🧪','🔬','📐','🌍','💡','🎨','🎵','📝','💻','🏛️','⚗️','🌿','🔭','📊'];
+const COLORS = ['#2563EB','#7C3AED','#059669','#DC2626','#D97706','#0891B2','#DB2777','#65A30D'];
+
+let DB = {subjects:[]};
+let currentSubjectIdx = -1;
+let currentTopicIdx = -1;
+
+function loadDB(){
+  try{const d=localStorage.getItem('studybook_v2');if(d)DB=JSON.parse(d);}catch(e){}
+  if(!DB.subjects) DB.subjects=[];
+}
+function saveDB(){
+  try{localStorage.setItem('studybook_v2',JSON.stringify(DB));}catch(e){}
+}
+loadDB();
+
+// ══════════════════════════════════════════════
+//  HOME
+// ══════════════════════════════════════════════
+function renderHome(){
+  const grid = document.getElementById('subjects-grid');
+  let html = DB.subjects.map((s,i)=>{
+    const topics = s.topics||[];
+    const totalCards = topics.reduce((a,t)=>a+(t.cards||[]).length,0);
+    return `<div class="subject-card" onclick="openSubject(${i})" style="--card-accent:${s.color}">
+      <div class="subject-actions">
+        <button class="icon-btn" onclick="event.stopPropagation();editSubject(${i})" title="Editar">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="event.stopPropagation();deleteSubject(${i})" title="Eliminar">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+        </button>
+      </div>
+      <div class="subject-icon">${s.emoji||'📚'}</div>
+      <div class="subject-name">${s.name}</div>
+      <div class="subject-meta">
+        <span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>${topics.length} temas</span>
+        <span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>${totalCards} tarjetas</span>
+      </div>
+    </div>`;
+  }).join('');
+  html += `<div class="add-subject-card" onclick="openNewSubjectModal()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Añadir materia
+  </div>`;
+  grid.innerHTML = html;
+}
+
+let selectedEmoji = EMOJIS[0];
+let selectedColor = COLORS[0];
+let editingSubjectIdx = -1;
+
+function openNewSubjectModal(){
+  editingSubjectIdx = -1;
+  selectedEmoji = EMOJIS[0];
+  selectedColor = COLORS[0];
+  document.getElementById('ms-name').value = '';
+  buildEmojiPicker(); buildColorPicker();
+  openModal('modal-subject');
+  document.getElementById('ms-name').focus();
+}
+
+function editSubject(i){
+  editingSubjectIdx = i;
+  const s = DB.subjects[i];
+  selectedEmoji = s.emoji||EMOJIS[0];
+  selectedColor = s.color||COLORS[0];
+  document.getElementById('ms-name').value = s.name;
+  buildEmojiPicker(); buildColorPicker();
+  openModal('modal-subject');
+}
+
+function buildEmojiPicker(){
+  document.getElementById('emoji-picker').innerHTML = EMOJIS.map(e=>
+    `<div class="emoji-opt${e===selectedEmoji?' sel':''}" onclick="selectEmoji('${e}',this)">${e}</div>`
+  ).join('');
+}
+function buildColorPicker(){
+  document.getElementById('color-opts').innerHTML = COLORS.map(c=>
+    `<div class="color-opt${c===selectedColor?' sel':''}" style="background:${c}" onclick="selectColor('${c}',this)" title="${c}"></div>`
+  ).join('');
+}
+function selectEmoji(e,el){
+  selectedEmoji=e;
+  document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function selectColor(c,el){
+  selectedColor=c;
+  document.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function confirmNewSubject(){
+  const name = document.getElementById('ms-name').value.trim();
+  if(!name) return;
+  if(editingSubjectIdx>=0){
+    DB.subjects[editingSubjectIdx].name = name;
+    DB.subjects[editingSubjectIdx].emoji = selectedEmoji;
+    DB.subjects[editingSubjectIdx].color = selectedColor;
+  } else {
+    DB.subjects.push({name, emoji:selectedEmoji, color:selectedColor, topics:[]});
+  }
+  saveDB(); closeModal('modal-subject'); renderHome();
+}
+
+function deleteSubject(i){
+  document.getElementById('del-title').textContent = 'Eliminar materia';
+  document.getElementById('del-msg').textContent = `¿Eliminar "${DB.subjects[i].name}" y todos sus temas?`;
+  document.getElementById('del-confirm-btn').onclick = ()=>{
+    DB.subjects.splice(i,1); saveDB(); closeModal('modal-delete'); renderHome();
+  };
+  openModal('modal-delete');
+}
+
+function openSubject(i){
+  currentSubjectIdx = i;
+  const s = DB.subjects[i];
+  if(!s.topics||!s.topics.length) s.topics=[{name:'Tema 1',shapes:[],cards:[]}];
+  document.getElementById('nb-subject-title').textContent = s.name;
+  showScreen('notebook');
+  currentTopicIdx = 0;
+  renderTopicsList();
+  loadTopic(0);
+}
+
+// ══════════════════════════════════════════════
+//  SUBJECTS – subject title inline edit
+// ══════════════════════════════════════════════
+document.getElementById('nb-subject-title').addEventListener('blur', ()=>{
+  const txt = document.getElementById('nb-subject-title').textContent.trim();
+  if(txt && currentSubjectIdx>=0){ DB.subjects[currentSubjectIdx].name=txt; saveDB(); }
+});
+
+// ══════════════════════════════════════════════
+//  TOPICS
+// ══════════════════════════════════════════════
+function getSubject(){ return DB.subjects[currentSubjectIdx]; }
+function getTopic(){ return getSubject().topics[currentTopicIdx]; }
+
+function renderTopicsList(){
+  const topics = getSubject().topics;
+  document.getElementById('topics-list').innerHTML = topics.map((t,i)=>
+    `<div class="topic-item${i===currentTopicIdx?' active':''}" onclick="loadTopic(${i})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span class="topic-item-name">${t.name}</span>
+      <button class="topic-item-del" onclick="event.stopPropagation();deleteTopic(${i})" title="Eliminar">×</button>
+    </div>`
+  ).join('');
+}
+
+function loadTopic(i){
+  saveCurrentShapes();
+  currentTopicIdx = i;
+  const t = getTopic();
+  shapes = t.shapes ? JSON.parse(JSON.stringify(t.shapes)) : [];
+  document.getElementById('topic-title-inp').value = t.name;
+  historyStack = [];
+  selected = -1;
+  renderTopicsList();
+  resizeCanvas();
+  redraw();
+  switchView('schema');
+}
+
+function createTopic(){
+  document.getElementById('mt-name').value = '';
+  openModal('modal-topic');
+  document.getElementById('mt-name').focus();
+}
+function confirmNewTopic(){
+  const name = document.getElementById('mt-name').value.trim();
+  if(!name) return;
+  getSubject().topics.push({name,shapes:[],cards:[]});
+  saveDB(); closeModal('modal-topic');
+  loadTopic(getSubject().topics.length-1);
+}
+function deleteTopic(i){
+  if(getSubject().topics.length<=1){alert('El cuaderno debe tener al menos un tema.');return;}
+  document.getElementById('del-title').textContent = 'Eliminar tema';
+  document.getElementById('del-msg').textContent = `¿Eliminar el tema "${getSubject().topics[i].name}"?`;
+  document.getElementById('del-confirm-btn').onclick = ()=>{
+    getSubject().topics.splice(i,1);
+    saveDB(); closeModal('modal-delete');
+    loadTopic(Math.max(0,i-1));
+  };
+  openModal('modal-delete');
+}
+function onTopicTitleChange(){
+  if(currentTopicIdx<0) return;
+  getTopic().name = document.getElementById('topic-title-inp').value;
+  saveDB(); renderTopicsList();
+}
+
+// ══════════════════════════════════════════════
+//  CANVAS / SCHEMA EDITOR
+// ══════════════════════════════════════════════
+const canvas = document.getElementById('schema-canvas');
+const ctx = canvas.getContext('2d');
+const canvasArea = document.getElementById('canvas-area');
+
+let tool = 'select', color = '#2563EB';
+let shapes = [], selected = -1, historyStack = [];
+let dragging = false, dragStart = null, dragShapeCopy = null;
+let drawStart = null, drawing = false;
+let arrowFrom = null;
+let editingInline = -1;
+
+function resizeCanvas(){
+  const r = canvasArea.getBoundingClientRect();
+  canvas.width = Math.max(900, r.width||900);
+  canvas.height = Math.max(600, r.height||600);
+  redraw();
+}
+window.addEventListener('resize', resizeCanvas);
+
+function setTool(t){
+  tool = t;
+  selected = -1; arrowFrom = null;
+  ['sel','box','oval','arrow','text'].forEach(id=>{
+    const el = document.getElementById('t-'+id);
+    if(el) el.classList.toggle('on', id===t);
+  });
+  canvas.style.cursor = t==='select'?'default':'crosshair';
+  redraw();
+}
+function setColor(el){
+  color = el.dataset.c;
+  document.querySelectorAll('.color-dot').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  if(selected>=0){
+    pushHistory();
+    shapes[selected].color = color;
+    saveCurrentShapes(); redraw();
+  }
+}
+
+function getPos(e){
+  const r = canvas.getBoundingClientRect();
+  const touch = e.touches?e.touches[0]:e;
+  return {x:touch.clientX-r.left, y:touch.clientY-r.top};
+}
+
+function hitTest(s,x,y){
+  if(s.type==='box') return x>=s.x&&x<=s.x+s.w&&y>=s.y&&y<=s.y+s.h;
+  if(s.type==='oval') return Math.pow((x-s.cx)/s.rx,2)+Math.pow((y-s.cy)/s.ry,2)<=1;
+  if(s.type==='text'){
+    ctx.font='13px DM Sans,sans-serif';
+    const w=ctx.measureText(s.text||'').width;
+    return x>=s.x&&x<=s.x+w&&y>=s.y-15&&y<=s.y+4;
+  }
+  return false;
+}
+
+canvas.addEventListener('mousedown', onDown);
+canvas.addEventListener('touchstart', e=>{e.preventDefault();onDown(e);},{passive:false});
+canvas.addEventListener('mousemove', onMove);
+canvas.addEventListener('touchmove', e=>{e.preventDefault();onMove(e);},{passive:false});
+canvas.addEventListener('mouseup', onUp);
+canvas.addEventListener('touchend', e=>{e.preventDefault();onUp(e);},{passive:false});
+
+function onDown(e){
+  const p = getPos(e);
+  if(tool==='select'){
+    let hit=-1;
+    for(let i=shapes.length-1;i>=0;i--) if(hitTest(shapes[i],p.x,p.y)){hit=i;break;}
+    selected=hit;
+    if(hit>=0){dragging=true;dragStart=p;dragShapeCopy=JSON.parse(JSON.stringify(shapes[hit]));}
+    redraw();
+  } else if(tool==='box'||tool==='oval'){
+    pushHistory(); drawStart=p; drawing=true;
+  } else if(tool==='text'){
+    pushHistory();
+    openInlineEditor(p.x, p.y, '', (txt)=>{
+      if(txt.trim()) shapes.push({type:'text',x:p.x,y:p.y,text:txt,color});
+      saveCurrentShapes(); redraw();
+    });
+  } else if(tool==='arrow'){
+    if(!arrowFrom){ arrowFrom=p; }
+    else{
+      pushHistory();
+      shapes.push({type:'arrow',x1:arrowFrom.x,y1:arrowFrom.y,x2:p.x,y2:p.y,color});
+      arrowFrom=null; saveCurrentShapes(); redraw();
+    }
+  }
+}
+
+function onMove(e){
+  const p=getPos(e);
+  if(dragging&&selected>=0&&dragShapeCopy){
+    const dx=p.x-dragStart.x, dy=p.y-dragStart.y;
+    const s=shapes[selected];
+    const orig=dragShapeCopy;
+    if(orig.x!==undefined) s.x=orig.x+dx;
+    if(orig.y!==undefined) s.y=orig.y+dy;
+    if(orig.cx!==undefined){s.cx=orig.cx+dx;s.cy=orig.cy+dy;}
+    if(orig.x1!==undefined){s.x1=orig.x1+dx;s.y1=orig.y1+dy;s.x2=orig.x2+dx;s.y2=orig.y2+dy;}
+    redraw();
+  } else if(drawing&&drawStart){
+    redraw();
+    const w=p.x-drawStart.x,h=p.y-drawStart.y;
+    ctx.globalAlpha=.5; ctx.strokeStyle=color; ctx.lineWidth=1.5;
+    if(tool==='box') ctx.strokeRect(drawStart.x,drawStart.y,w,h);
+    else{
+      ctx.beginPath();
+      ctx.ellipse(drawStart.x+w/2,drawStart.y+h/2,Math.abs(w/2),Math.abs(h/2),0,0,Math.PI*2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+  if(arrowFrom){
+    redraw();
+    drawArrowShape(ctx,arrowFrom.x,arrowFrom.y,p.x,p.y,'#999',1.5);
+  }
+}
+
+function onUp(e){
+  const p=getPos(e);
+  if(drawing&&drawStart){
+    const w=p.x-drawStart.x,h=p.y-drawStart.y;
+    if(Math.abs(w)>8&&Math.abs(h)>8){
+      const label=prompt('Etiqueta (puede quedar vacío):','');
+      if(label!==null){
+        if(tool==='box') shapes.push({type:'box',x:Math.min(drawStart.x,p.x),y:Math.min(drawStart.y,p.y),w:Math.abs(w),h:Math.abs(h),text:label,color});
+        else shapes.push({type:'oval',cx:drawStart.x+w/2,cy:drawStart.y+h/2,rx:Math.abs(w/2),ry:Math.abs(h/2),text:label,color});
+      }
+      saveCurrentShapes();
+    }
+    drawing=false;drawStart=null;redraw();
+  }
+  if(dragging){dragging=false;saveCurrentShapes();}
+}
+
+canvas.addEventListener('dblclick',e=>{
+  const p=getPos(e);
+  for(let i=shapes.length-1;i>=0;i--){
+    if(hitTest(shapes[i],p.x,p.y)){
+      const s=shapes[i];
+      const cx=s.x!==undefined?s.x+( s.w||0)/2:(s.cx||s.x)||0;
+      const cy=s.y!==undefined?s.y+(s.h||0)/2:(s.cy||s.y)||0;
+      openInlineEditor(cx,cy,s.text||'',(txt)=>{
+        shapes[i].text=txt; saveCurrentShapes(); redraw();
+      });
+      break;
+    }
+  }
+});
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Delete'||e.key==='Backspace'){
+    if(document.activeElement===document.body||document.activeElement===canvas) deleteSelected();
+  }
+  if((e.metaKey||e.ctrlKey)&&e.key==='z'){e.preventDefault();undoAction();}
+  if(e.key==='v'&&document.activeElement===document.body) setTool('select');
+  if(e.key==='b'&&document.activeElement===document.body) setTool('box');
+  if(e.key==='o'&&document.activeElement===document.body) setTool('oval');
+  if(e.key==='a'&&document.activeElement===document.body) setTool('arrow');
+  if(e.key==='t'&&document.activeElement===document.body) setTool('text');
+  if(e.key==='Escape'){ arrowFrom=null; selected=-1; redraw(); }
+});
+
+function deleteSelected(){
+  if(selected>=0){pushHistory();shapes.splice(selected,1);selected=-1;saveCurrentShapes();redraw();}
+}
+function undoAction(){
+  if(!historyStack.length) return;
+  shapes=historyStack.pop();
+  saveCurrentShapes(); selected=-1; redraw();
+}
+function pushHistory(){
+  historyStack.push(JSON.parse(JSON.stringify(shapes)));
+  if(historyStack.length>40) historyStack.shift();
+}
+
+// ── INLINE EDITOR ──
+let inlineCb = null;
+function openInlineEditor(x,y,val,cb){
+  inlineCb=cb;
+  const ed=document.getElementById('inline-editor');
+  const inp=document.getElementById('inline-input');
+  const r=canvasArea.getBoundingClientRect();
+  ed.style.left=(r.left+x)+'px';
+  ed.style.top=(r.top+y-10)+'px';
+  ed.style.display='block';
+  inp.value=val||'';
+  inp.focus(); inp.select();
+}
+document.getElementById('inline-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();commitInline();}
+  if(e.key==='Escape'){document.getElementById('inline-editor').style.display='none';inlineCb=null;}
+});
+document.getElementById('inline-input').addEventListener('blur',()=>{setTimeout(commitInline,80);});
+function commitInline(){
+  const ed=document.getElementById('inline-editor');
+  if(ed.style.display==='none') return;
+  const val=document.getElementById('inline-input').value;
+  ed.style.display='none';
+  if(inlineCb){inlineCb(val);inlineCb=null;}
+}
+
+// ── DRAWING ──
+function drawArrowShape(c,x1,y1,x2,y2,col,lw){
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);
+  c.strokeStyle=col;c.lineWidth=lw||2;c.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);
+  c.beginPath();
+  c.moveTo(x2,y2);
+  c.lineTo(x2-12*Math.cos(a-.4),y2-12*Math.sin(a-.4));
+  c.lineTo(x2-12*Math.cos(a+.4),y2-12*Math.sin(a+.4));
+  c.closePath();c.fillStyle=col;c.fill();
+}
+
+function hexAlpha(hex,a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function wrapText(txt,maxW){
+  if(!txt) return [];
+  ctx.font='500 12px DM Sans,sans-serif';
+  const words=txt.split(' '),lines=[];let line=[];
+  words.forEach(w=>{
+    const test=[...line,w].join(' ');
+    if(ctx.measureText(test).width>maxW-12&&line.length){lines.push(line.join(' '));line=[];}
+    line.push(w);
+  });
+  if(line.length) lines.push(line.join(' '));
+  return lines;
+}
+
+function redraw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // grid
+  ctx.strokeStyle='rgba(0,0,0,0.045)';ctx.lineWidth=.8;
+  for(let x=0;x<canvas.width;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+  for(let y=0;y<canvas.height;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+
+  shapes.forEach((s,i)=>{
+    const isSel=i===selected;
+    ctx.save();
+    if(s.type==='box'){
+      ctx.fillStyle=hexAlpha(s.color,.1);
+      ctx.beginPath();roundRect(ctx,s.x,s.y,s.w,s.h,8);ctx.fill();
+      ctx.strokeStyle=isSel?s.color:hexAlpha(s.color,.75);
+      ctx.lineWidth=isSel?2.5:1.5;
+      ctx.beginPath();roundRect(ctx,s.x,s.y,s.w,s.h,8);ctx.stroke();
+      if(isSel) drawHandles(s.x,s.y,s.w,s.h,s.color);
+      drawTextIn(s.text,s.x+s.w/2,s.y+s.h/2,s.w,s.color);
+    } else if(s.type==='oval'){
+      ctx.fillStyle=hexAlpha(s.color,.1);
+      ctx.beginPath();ctx.ellipse(s.cx,s.cy,s.rx,s.ry,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=isSel?s.color:hexAlpha(s.color,.75);
+      ctx.lineWidth=isSel?2.5:1.5;
+      ctx.beginPath();ctx.ellipse(s.cx,s.cy,s.rx,s.ry,0,0,Math.PI*2);ctx.stroke();
+      drawTextIn(s.text,s.cx,s.cy,s.rx*1.8,s.color);
+    } else if(s.type==='arrow'){
+      drawArrowShape(ctx,s.x1,s.y1,s.x2,s.y2,s.color,1.8);
+    } else if(s.type==='text'){
+      ctx.font='13px DM Sans,sans-serif';ctx.fillStyle=s.color;
+      ctx.textAlign='left';ctx.textBaseline='alphabetic';
+      ctx.fillText(s.text||'',s.x,s.y);
+      if(isSel){
+        ctx.strokeStyle=s.color;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+        const w=ctx.measureText(s.text||'').width;
+        ctx.strokeRect(s.x-2,s.y-14,w+4,18);ctx.setLineDash([]);
+      }
+    }
+    ctx.restore();
+  });
+
+  if(arrowFrom){
+    ctx.fillStyle=color;ctx.beginPath();
+    ctx.arc(arrowFrom.x,arrowFrom.y,5,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function roundRect(c,x,y,w,h,r){
+  c.beginPath();c.moveTo(x+r,y);
+  c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();
+}
+
+function drawHandles(x,y,w,h,col){
+  [[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(([hx,hy])=>{
+    ctx.fillStyle='#fff';ctx.strokeStyle=col;ctx.lineWidth=1.5;
+    ctx.fillRect(hx-4,hy-4,8,8);ctx.strokeRect(hx-4,hy-4,8,8);
+  });
+}
+
+function drawTextIn(txt,cx,cy,maxW,col){
+  if(!txt) return;
+  const lines=wrapText(txt,maxW);
+  ctx.font='500 12px DM Sans,sans-serif';ctx.fillStyle=col;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  const lh=17,total=lines.length*lh;
+  lines.forEach((l,li)=>ctx.fillText(l,cx,cy-total/2+li*lh+lh/2));
+}
+
+function saveCurrentShapes(){
+  if(currentSubjectIdx<0||currentTopicIdx<0) return;
+  getTopic().shapes = JSON.parse(JSON.stringify(shapes));
+  saveDB();
+}
+
+// ══════════════════════════════════════════════
+//  CARDS VIEW
+// ══════════════════════════════════════════════
+function switchView(v){
+  document.getElementById('canvas-area').style.display = v==='schema'?'block':'none';
+  document.getElementById('cards-area').style.display = v==='cards'?'flex':'none';
+  document.getElementById('vt-schema').classList.toggle('active',v==='schema');
+  document.getElementById('vt-cards').classList.toggle('active',v==='cards');
+  if(v==='cards') renderCards();
+}
+
+function renderCards(){
+  const cards = getTopic().cards||[];
+  const grid = document.getElementById('cards-grid');
+  const btn = document.getElementById('gen-btn');
+  document.getElementById('ai-status').textContent = cards.length ? cards.length+' tarjetas' : '';
+  if(!cards.length){
+    grid.innerHTML=`<div class="cards-empty"><p>No hay tarjetas todavía</p><small>Haz clic en "Generar con IA" para crear tarjetas basadas en este tema</small></div>`;
+    return;
+  }
+  grid.innerHTML = cards.map((c,i)=>`
+    <div class="flash-card" onclick="this.classList.toggle('flipped')">
+      <div class="card-q">${c.q}</div>
+      <div class="card-a">${c.a}</div>
+      <div class="card-hint">Clic para ver respuesta</div>
+    </div>`).join('');
+}
+
+async function generateCards(){
+  const btn=document.getElementById('gen-btn');
+  const status=document.getElementById('ai-status');
+  btn.disabled=true; btn.textContent='Generando...';
+  status.textContent='Llamando a la IA...';
+
+  const t=getTopic();
+  const topicName=t.name;
+  const subjectName=getSubject().name;
+  const shapeTexts=(t.shapes||[]).filter(s=>s.text).map(s=>s.text).join(', ');
+  const prompt=`Genera 8 tarjetas de estudio tipo pregunta-respuesta sobre el tema "${topicName}" de la materia "${subjectName}".${shapeTexts?` Conceptos del esquema: ${shapeTexts}.`:''} Responde ÚNICAMENTE con un JSON array, sin markdown, sin backticks, sin explicaciones. Formato: [{"q":"pregunta","a":"respuesta"}]`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=(data.content||[]).map(b=>b.text||'').join('');
+    const clean=text.replace(/```json|```/g,'').trim();
+    const idx=clean.indexOf('[');
+    const parsed=JSON.parse(clean.slice(idx));
+    t.cards=parsed;
+    saveDB(); renderCards();
+    status.textContent=parsed.length+' tarjetas generadas';
+  }catch(err){
+    status.textContent='Error. Verifica tu conexión.';
+    console.error(err);
+  }
+  btn.disabled=false;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Generar con IA';
+}
+
+function clearCards(){
+  if(confirm('¿Eliminar todas las tarjetas de este tema?')){
+    getTopic().cards=[];saveDB();renderCards();
+  }
+}
+
+// ══════════════════════════════════════════════
+//  EXPORT
+// ══════════════════════════════════════════════
+function exportImage(){
+  const a=document.createElement('a');
+  a.href=canvas.toDataURL('image/png');
+  a.download=getTopic().name+'.png';
+  a.click();
+}
+
+function exportPDF(){
+  const dataURL=canvas.toDataURL('image/png');
+  const topic=getTopic();
+  const subject=getSubject();
+  const cards=topic.cards||[];
+  const cardsHtml=cards.map(c=>`<div class="card"><div class="q">${c.q}</div><div class="a">${c.a}</div></div>`).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${subject.name} – ${topic.name}</title>
+  <style>body{font-family:Georgia,serif;margin:0;padding:0}
+  header{background:#1e293b;color:#fff;padding:20px 30px}
+  header h1{font-size:22px;margin:0}header p{font-size:13px;margin:4px 0 0;opacity:.7}
+  .schema{padding:20px 30px}.schema img{width:100%;border:1px solid #e2e8f0;border-radius:8px}
+  .cards-section{padding:20px 30px}.cards-section h2{font-size:16px;border-bottom:2px solid #e2e8f0;padding-bottom:6px;margin-bottom:14px}
+  .card{border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;margin-bottom:10px;page-break-inside:avoid}
+  .q{font-weight:600;font-size:13px;margin-bottom:5px}.a{font-size:12px;color:#475569}
+  @media print{button{display:none}}</style></head><body>
+  <header><h1>${subject.emoji||''} ${subject.name}</h1><p>${topic.name}</p></header>
+  <div class="schema"><img src="${dataURL}"/></div>
+  ${cards.length?`<div class="cards-section"><h2>Tarjetas de estudio</h2>${cardsHtml}</div>`:''}
+  <script>window.onload=()=>{window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+function exportAllPDF(){
+  const subject=getSubject();
+  let allImgs='';
+  const orig=currentTopicIdx;
+  // build just text-based export for all topics
+  let html='';
+  subject.topics.forEach(t=>{
+    html+=`<h2>${t.name}</h2>`;
+    const cards=t.cards||[];
+    if(cards.length){
+      html+='<table style="width:100%;border-collapse:collapse;margin-bottom:16px">';
+      html+='<tr><th style="border:1px solid #ccc;padding:6px;background:#f8f8f8;text-align:left">Pregunta</th><th style="border:1px solid #ccc;padding:6px;background:#f8f8f8;text-align:left">Respuesta</th></tr>';
+      cards.forEach(c=>{html+=`<tr><td style="border:1px solid #ccc;padding:6px">${c.q}</td><td style="border:1px solid #ccc;padding:6px">${c.a}</td></tr>`;});
+      html+='</table>';
+    } else html+='<p style="color:#888;font-size:12px">Sin tarjetas generadas.</p>';
+  });
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${subject.name}</title>
+  <style>body{font-family:Georgia,serif;padding:30px;color:#1e293b}h1{font-size:24px;border-bottom:3px solid #2563EB;padding-bottom:8px}h2{font-size:16px;margin-top:24px;color:#2563EB}@media print{button{display:none}}</style></head>
+  <body><h1>${subject.emoji||''} ${subject.name} – Resumen completo</h1>${html}
+  <script>window.onload=()=>{window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+function exportWord(){
+  const topic=getTopic();
+  const subject=getSubject();
+  const cards=topic.cards||[];
+  const rows=cards.map(c=>`<tr><td style="border:1px solid #ccc;padding:8px;width:50%">${c.q}</td><td style="border:1px solid #ccc;padding:8px">${c.a}</td></tr>`).join('');
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+  <head><meta charset="utf-8"><title>${topic.name}</title></head>
+  <body><h1>${subject.emoji||''} ${subject.name}</h1><h2>${topic.name}</h2>
+  ${cards.length?`<table style="border-collapse:collapse;width:100%"><tr><th style="border:1px solid #ccc;padding:8px;background:#f0f0f0">Pregunta</th><th style="border:1px solid #ccc;padding:8px;background:#f0f0f0">Respuesta</th></tr>${rows}</table>`:'<p>Sin tarjetas.</p>'}
+  </body></html>`;
+  const blob=new Blob([html],{type:'application/msword'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=topic.name+'.doc';a.click();
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='notebook') setTimeout(()=>{resizeCanvas();redraw();},50);
+}
+function goHome(){saveCurrentShapes();showScreen('home');renderHome();}
+
+// ══════════════════════════════════════════════
+//  MODAL HELPERS
+// ══════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m) m.classList.remove('open');});
+});
+document.getElementById('modal-input') && document.getElementById('modal-input').addEventListener('keydown',e=>{if(e.key==='Enter') confirmNewSubject();});
+document.getElementById('mt-name').addEventListener('keydown',e=>{if(e.key==='Enter') confirmNewTopic();});
+document.getElementById('ms-name').addEventListener('keydown',e=>{if(e.key==='Enter') confirmNewSubject();});
+
+// ══════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════
+renderHome();
+if(!DB.subjects.length){
+  // seed with example
+  DB.subjects.push({name:'Biología',emoji:'🔬',color:'#059669',topics:[
+    {name:'La Célula',shapes:[
+      {type:'box',x:30,y:40,w:160,h:50,text:'Célula Eucariota',color:'#2563EB'},
+      {type:'oval',cx:300,cy:55,rx:70,ry:28,text:'Núcleo',color:'#7C3AED'},
+      {type:'oval',cx:300,cy:110,rx:70,ry:28,text:'Mitocondria',color:'#059669'},
+      {type:'arrow',x1:192,y1:55,x2:228,y2:55,color:'#7C3AED'},
+      {type:'arrow',x1:192,y1:70,x2:228,y2:110,color:'#059669'},
+      {type:'text',x:30,y:170,text:'Unidad básica de la vida',color:'#374151'}
+    ],cards:[]}
+  ]});
+  saveDB(); renderHome();
+}
+</script>
+</body>
+</html>
